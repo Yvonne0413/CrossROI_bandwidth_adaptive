@@ -49,7 +49,6 @@ class YOLOV3(object):
     def __build_nework(self, input_data, input_mask):
         
         if input_mask is not None:
-            assert(tf.shape(input_data)[0] == tf.shape(input_mask[0]))
             route_1, route_2, input_data = backbone.sparse_darknet53(input_data, input_mask, self.trainable)
         else:
             route_1, route_2, input_data = backbone.darknet53(input_data, self.trainable)
@@ -258,5 +257,4 @@ class YOLOV3(object):
             prob_loss = loss_sbbox[2] + loss_mbbox[2] + loss_lbbox[2]
 
         return giou_loss, conf_loss, prob_loss
-
 

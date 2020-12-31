@@ -1,3 +1,4 @@
+from numpy.lib.type_check import imag
 from core.sparse_conv_perf import N_REPEAT
 import tensorflow as tf
 import numpy as np
@@ -13,7 +14,7 @@ import tensorflow as tf
 from PIL import Image
 
 def generate_image_data(batch_size):
-    vid = cv2.VideoCapture("../DelegationGraph/croped_c004.avi")
+    vid = cv2.VideoCapture("../DelegationGraph/croped_c003.avi")
 
     frames = []
     for i in range(batch_size):
@@ -37,34 +38,25 @@ def generate_image_data(batch_size):
 
 
 def generate_mask_data(batch_size):
-    vid = cv2.VideoCapture("../DelegationGraph/croped_c004.avi")
+    mask_im = cv2.imread("../DelegationGraph/c003_mask.jpg")
+    mask_im = np.round(utils.image_preporcess(np.copy(mask_im), [416, 416])[:,:,0])
+    mask_im = mask_im[np.newaxis, ..., np.newaxis]
 
-    frames = []
-    for i in range(batch_size):
-        vid.set(1, i)
-        _, frame = vid.read()
-        frames.append(frame)
-
-    for i, frame in enumerate(frames):
-        frames[i] = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-
-    images_data  = []
-    for frame in frames:
-        image_data = utils.image_preporcess(np.copy(frame), [416, 416])
-        image_data = image_data[np.newaxis, ...]
-        images_data.append(image_data)
+    images_data = [mask_im for _ in range(batch_size)] 
 
     x = tf.constant(np.vstack(images_data).astype(np.float32))
 
     return x
 
 print("=======================")
-batch_size = 2
+
+batch_size = 8
 
 x = generate_image_data(batch_size)
+mask = generate_mask_data(batch_size)
 
-model = YOLOV3(x, False)
+model = YOLOV3(x, False, mask)
+
 
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
