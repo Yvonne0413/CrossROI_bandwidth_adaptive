@@ -306,9 +306,9 @@ def convert_mask_to_indices(mask, bsize, ksize, strides, padding, tol):
     bstrides = _calc_block_strides(bsize, ksize, strides)
 
     # Pad mask.
-    mask_ = tf.expand_dims(mask, 1)
+    mask_ = tf.expand_dims(mask, 3)
     mask_ = _pad_input(mask_, ksize, strides, padding, bsize=bsize, bstrides=bstrides)
-    mask_ = tf.nn.max_pool(mask_, bsize, bstrides, 'VALID', data_format='NCHW')    # Blocks are always valid conv.
+    mask_ = tf.nn.max_pool(mask_, bsize, bstrides, 'VALID')    # Blocks are always valid conv.
     mask_ = tf.squeeze(mask_, [3])
     indices = tf.where(tf.greater(mask_, tol))
     indices = tf.cast(indices, tf.int32)
