@@ -81,7 +81,7 @@ def sparse_darknet53(input_data, input_mask, trainable, debug_bk=9):
     input_data = common.convolutional(input_data, filters_shape=(3, 3, 32,  64),
                                         trainable=trainable, name='conv1', downsample=True)
 
-    input_mask = tf.nn.max_pool(input_mask, [1,2,2,1], [1,2,2,1], 'SAME', data_format='NHWC')
+    input_mask = tf.nn.max_pool(input_mask, [1,1,2,2], [1,1,2,2], 'SAME', data_format='NCHW')
 
     if debug_bk == 0: return input_data
 
@@ -93,7 +93,7 @@ def sparse_darknet53(input_data, input_mask, trainable, debug_bk=9):
     input_data = common.convolutional(input_data, filters_shape=(3, 3,  64, 128),
                                         trainable=trainable, name='conv4', downsample=True)
 
-    input_mask = tf.nn.max_pool(input_mask, [1,2,2,1], [1,2,2,1], 'SAME', data_format='NHWC')
+    input_mask = tf.nn.max_pool(input_mask, [1,1,2,2], [1,1,2,2], 'SAME', data_format='NCHW')
 
     if debug_bk == 2: return input_data
 
@@ -105,7 +105,7 @@ def sparse_darknet53(input_data, input_mask, trainable, debug_bk=9):
     input_data = common.convolutional(input_data, filters_shape=(3, 3, 128, 256),
                                         trainable=trainable, name='conv9', downsample=True)
 
-    input_mask = tf.nn.max_pool(input_mask, [1,2,2,1], [1,2,2,1], 'SAME', data_format='NHWC')
+    input_mask = tf.nn.max_pool(input_mask, [1,1,2,2], [1,1,2,2], 'SAME', data_format='NCHW')
 
     if debug_bk == 4: return input_data
 
@@ -118,14 +118,14 @@ def sparse_darknet53(input_data, input_mask, trainable, debug_bk=9):
     input_data = common.convolutional(input_data, filters_shape=(3, 3, 256, 512),
                                         trainable=trainable, name='conv26', downsample=True)
 
-    input_mask = tf.nn.max_pool(input_mask, [1,2,2,1], [1,2,2,1], 'SAME', data_format='NHWC')
+    input_mask = tf.nn.max_pool(input_mask, [1,1,2,2], [1,1,2,2], 'SAME', data_format='NCHW')
 
     if debug_bk == 6: return input_data
 
     for i in range(8):
         input_data = common.sparse_residual_block(input_data, input_mask, 9, 0.05, 512, 256, 512, trainable=trainable, name='residual%d' %(i+11))
 
-    input_mask = tf.nn.max_pool(input_mask, [1,2,2,1], [1,2,2,1], 'SAME', data_format='NHWC')
+    input_mask = tf.nn.max_pool(input_mask, [1,1,2,2], [1,1,2,2], 'SAME', data_format='NCHW')
 
     if debug_bk == 7: return input_data
 
@@ -133,7 +133,7 @@ def sparse_darknet53(input_data, input_mask, trainable, debug_bk=9):
     input_data = common.convolutional(input_data, filters_shape=(3, 3, 512, 1024),
                                         trainable=trainable, name='conv43', downsample=True)
 
-    input_mask = tf.nn.max_pool(input_mask, [1,2,2,1], [1,2,2,1], 'SAME', data_format='NHWC')
+    input_mask = tf.nn.max_pool(input_mask, [1,1,2,2], [1,1,2,2], 'SAME', data_format='NCHW')
 
     if debug_bk == 8: return input_data
 
