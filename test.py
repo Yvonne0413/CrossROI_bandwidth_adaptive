@@ -40,7 +40,7 @@ def generate_image_data(batch_size):
 def generate_mask_data(batch_size):
     mask_im = cv2.imread("../DelegationGraph/c003_mask.jpg")
     mask_im = np.round(utils.image_preporcess(np.copy(mask_im), [416, 416])[:,:,0])
-    mask_im = mask_im[np.newaxis, np.newaxis, ...]
+    mask_im = mask_im[np.newaxis, ..., np.newaxis]
 
     images_data = [mask_im for _ in range(batch_size)] 
 
@@ -50,7 +50,7 @@ def generate_mask_data(batch_size):
 
 print("=======================")
 
-batch_size = 16
+batch_size = 20
 
 x = generate_image_data(batch_size)
 mask = generate_mask_data(batch_size)
@@ -65,7 +65,8 @@ s = time.time()
 for i in range(30):
     if i == 10:
         s = time.time()
-    sess.run([x, model.pred_sbbox, model.pred_mbbox, model.pred_lbbox])
+    _, a, b, c = sess.run([x, model.pred_sbbox, model.pred_mbbox, model.pred_lbbox])
+    # print(a.shape, b.shape, c.shape)
 e = time.time()
 
 print(batch_size,  (e - s) / 20)
