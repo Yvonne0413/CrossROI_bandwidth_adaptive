@@ -134,7 +134,7 @@ def sparse_residual_block(input_data, input_mask, block_size, tol, input_channel
         ind = convert_mask_to_indices_custom(mask, block_params, tol, avgpool)
 
         conv = sparse_res_block_bottleneck(
-                input_data, ksize_list, ind, block_params, strides, is_training=trainable, use_var=False, data_format='NCHW')
+                input_data, ksize_list, ind, block_params, strides, is_training=trainable, use_var=False, data_format='NHWC')
        
         conv = tf.reshape(conv, xsize)
 
