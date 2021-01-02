@@ -49,8 +49,9 @@ cur_weights_mess = []
 tf.Graph().as_default()
 with tf.name_scope('input'):
     input_data = tf.placeholder(dtype=tf.float32, shape=(1, 416, 416, 3), name='input_data')
+    input_mask = tf.placeholder(dtype=tf.float32, shape=(1, 416, 416, 1), name='input_mask')
     training = tf.placeholder(dtype=tf.bool, name='trainable')
-model = YOLOV3(input_data, training)
+model = YOLOV3(input_data, training, input_mask)
 
 f = open("sparse_weights_name.txt","w")
 for var in tf.global_variables():
