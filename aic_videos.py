@@ -21,10 +21,10 @@ from PIL import Image
 
 return_elements = ["input/input_data:0", "input/input_mask:0", "pred_sbbox/concat_2:0", "pred_mbbox/concat_2:0", "pred_lbbox/concat_2:0"]
 pb_file         = "./yolov3_coco.pb"
-video_path      = "../DelegationGraph/croped_c005.avi"
+video_path      = "../DelegationGraph/croped_c003.avi"
 # video_path      = "../DelegationGraph/h264_c005.avi"
-mask_path      = "../DelegationGraph/c005_mask.jpg"
-det_out        = "det_c005.txt"
+mask_path      = "../DelegationGraph/c003_mask.jpg"
+det_out        = "det_c003.txt"
 # det_out        = "baseline_c005.txt"
 num_classes     = 80
 input_size      = 416
@@ -87,8 +87,6 @@ with tf.Session(graph=graph) as sess:
 
         for bbox in bboxes:
             if bbox[-1] not in [2, 5, 7]:
-                continue
-            if bbox[2] * bbox[3] < 6000:
                 continue
             f.write("{} {} {} {} {} {}\n".format(frame_id, bbox[0], bbox[1], bbox[2], bbox[3], bbox[4]))
 
