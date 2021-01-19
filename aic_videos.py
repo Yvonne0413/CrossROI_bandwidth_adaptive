@@ -36,7 +36,7 @@ def run_directory(scene_name, setting_name):
             video_path = setting_data_dir + '/' + 'croped_' + camera_name + '.avi'
             mask_path = setting_data_dir + '/'  + camera_name + '_mask.jpg'
 
-        output_path = result_root + '/' + scene_name + '/' + 'det_' + camera_name + '.txt'
+        output_path = result_root + '/' + scene_name + '/' + setting_name + '/' + 'det_' + camera_name + '.txt'
 
         run_inference(video_path, mask_path, output_path)
     
