@@ -13,22 +13,17 @@ import core.utils as utils
 import tensorflow as tf
 from PIL import Image
 
-def generate_image_data(batch_size):
-    vid = cv2.VideoCapture("../DelegationGraph/croped_c003.mp4")
+def generate_image_data(data_path, batch_size, resolution):
+    frame = cv2.imread(data_path)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     frames = []
     for i in range(batch_size):
-        vid.set(1, i)
-        _, frame = vid.read()
         frames.append(frame)
-
-    for i, frame in enumerate(frames):
-        frames[i] = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
 
     images_data  = []
     for frame in frames:
-        image_data = utils.image_preporcess(np.copy(frame), [416, 416])
+        image_data = utils.image_preporcess(np.copy(frame), [resolution, resolution])
         image_data = image_data[np.newaxis, ...]
         images_data.append(image_data)
 
@@ -37,9 +32,9 @@ def generate_image_data(batch_size):
     return x
 
 
-def generate_mask_data(batch_size):
-    mask_im = cv2.imread("../DelegationGraph/c003_mask.jpg")
-    mask_im = np.round(utils.image_preporcess(np.copy(mask_im), [416, 416])[:,:,0])
+def generate_mask_data(mask_path, batch_size, resolution):
+    mask_im = cv2.imread(mask_path)
+    mask_im = np.round(utils.image_preporcess(np.copy(mask_im), [resolution, resolution])[:,:,0])
     mask_im = mask_im[np.newaxis, ..., np.newaxis]
 
     images_data = [mask_im for _ in range(batch_size)] 
@@ -48,79 +43,63 @@ def generate_mask_data(batch_size):
 
     return x
 
-print("=======================")
 
-batch_size = 20
-
-x = generate_image_data(batch_size)
-mask = generate_mask_data(batch_size)
-
-model = YOLOV3(x, False, mask)
+data_root = '../DelegationGraph/videos/S01/'
+result_root = './measure_speed/'
+scene_name = 'S01'
+cameras = ['c001', 'c002', 'c003', 'c004', 'c005']
 
 
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+if __name__ == '__main__':
 
-s = time.time()
-for i in range(30):
-    if i == 10:
-        s = time.time()
-    _, a, b, c = sess.run([x, model.pred_sbbox, model.pred_mbbox, model.pred_lbbox])
-    # print(a.shape, b.shape, c.shape)
-e = time.time()
+    batch_size = 5
+    resolution = 960
+    repeat = 10
 
-print(batch_size,  (e - s) / 20)
+    Results = {}
 
-'''
-Profile = {'original': [0] * 10, 'sparse': [0] * 10, 'sparse_var': [0] * 10}
+    for setting in ['1e-06_1.0', '5e-06_1.0', '1e-05_1.0', '5e-05_1.0', '1e-04_1.0', \
+					'2e-05_0.01', '2e-05_0.05', '2e-05_0.1',  '2e-05_1.0', '2e-05_10.0',\
+					'nofilter' , 'baseline']:
 
-for debug_bk in range(10):
-    with tf.variable_scope('original{}'.format(debug_bk)):
-        y = darknet53(x, False, debug_bk)
+        Results[setting] = {}
 
-    with tf.variable_scope('sparse{}'.format(debug_bk)):
-        z = sparse_darknet53(x, mask, False, debug_bk)
+        for camera in cameras:
 
-    # with tf.variable_scope('sparse_var{}'.format(debug_bk)):
-    #     w = sparse_darknet53_var(x, mask, False, debug_bk)
+            Results[setting][camera] = []
+ 
+            data_path = data_root + setting + '/' + camera + '_mask.jpg'
+            mask_path = data_root + setting + '/' + camera + '_mask.jpg'
+
+            if setting == 'baseline':
+                data_path = data_root + 'nofilter' + '/' + camera + '_mask.jpg'
+                mask_path = None
+
+            x = generate_image_data(data_path, batch_size, resolution)
 
 
-    for type in ['sparse', 'original']:
-        sess = tf.Session()
-        sess.run(tf.global_variables_initializer())
+            if mask_path is not None:
+                mask = generate_mask_data(mask_path, batch_size, resolution)
+                print(mask.shape)
+                model = YOLOV3(x, False, mask)
+            else:
+                model = YOLOV3(x, False)
 
-        s = time.time()
-        for i in range(30):
-            if i == 10:
+            for _ in range(repeat):
+
+                sess = tf.Session()
+                sess.run(tf.global_variables_initializer())
+
                 s = time.time()
-            if type == 'sparse':
-                _, z_out = sess.run([x, z])
-                if isinstance(z_out, tuple):
-                    z_out = z_out[-1]
-                print(np.min(z_out))
-            elif type == 'original':
-                _, y_out = sess.run([x, y])
-                if isinstance(y_out, tuple):
-                    y_out = y_out[-1]
-                print(np.min(y_out))
-        e = time.time()
+                for i in range(30):
+                    if i == 10:
+                        s = time.time()
+                    _, a, b, c = sess.run([x, model.pred_sbbox, model.pred_mbbox, model.pred_lbbox])
+                e = time.time()
 
-        Profile[type][debug_bk] = (e - s) / 20
+                print(batch_size,  (e - s) / 20)
+                Results[setting][camera].append((e -s) / 20)
 
+                sess.close()
 
-print(Profile['original'])
-print(Profile['sparse'])
-# print(Profile['sparse_var'])
-
-part_org = [Profile['original'][0]] + [Profile['original'][i+1] - Profile['original'][i] for i in range(9)]
-part_spa = [Profile['sparse'][0]] + [Profile['sparse'][i+1] - Profile['sparse'][i] for i in range(9)]
-
-print(part_org)
-print(part_spa)
-# print(part_spa_var)
-
-json = json.dumps(Profile)
-f = open("dict.json","w")
-f.write(json)
-f.close()
-'''
+            tf.reset_default_graph()
