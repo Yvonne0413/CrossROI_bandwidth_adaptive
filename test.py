@@ -14,7 +14,7 @@ import tensorflow as tf
 from PIL import Image
 
 def generate_image_data(batch_size):
-    vid = cv2.VideoCapture("../DelegationGraph/croped_c003.avi")
+    vid = cv2.VideoCapture("../DelegationGraph/croped_c003.mp4")
 
     frames = []
     for i in range(batch_size):

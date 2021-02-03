@@ -22,7 +22,7 @@ from PIL import Image
 return_elements = ["input/input_data:0", "pred_sbbox/concat_2:0", "pred_mbbox/concat_2:0", "pred_lbbox/concat_2:0"]
 pb_file         = "./yolov3_coco.pb"
 # video_path      = "./docs/images/road.mp4"
-video_path      = "../DelegationGraph/croped_c004.avi"
+video_path      = "../DelegationGraph/croped_c004.mp4"
 # video_path      = 0
 num_classes     = 80
 input_size      = 416

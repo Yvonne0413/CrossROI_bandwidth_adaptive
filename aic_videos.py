@@ -30,10 +30,10 @@ def run_directory(scene_name, setting_name):
     setting_data_dir = data_root + '/' + scene_name + '/' + setting_name
     for camera_name in cameras:
         if setting_name == 'baseline':
-            video_path = setting_data_dir + '/' + 'h264_' + camera_name + '.avi'
+            video_path = setting_data_dir + '/' + 'h264_' + camera_name + '.mp4'
             mask_path = None
         else:
-            video_path = setting_data_dir + '/' + 'croped_' + camera_name + '.avi'
+            video_path = setting_data_dir + '/' + 'croped_' + camera_name + '.mp4'
             mask_path = setting_data_dir + '/'  + camera_name + '_mask.jpg'
 
         output_path = result_root + '/' + scene_name + '/' + setting_name + '/' + 'det_' + camera_name + '.txt'
