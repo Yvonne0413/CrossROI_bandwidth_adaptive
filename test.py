@@ -103,3 +103,5 @@ if __name__ == '__main__':
                 sess.close()
 
             tf.reset_default_graph()
+    
+    np.save('measure_speed/speed_res.npy', Results)
