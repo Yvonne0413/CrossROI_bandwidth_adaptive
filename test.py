@@ -98,7 +98,7 @@ if __name__ == '__main__':
                 e = time.time()
 
                 print(batch_size,  (e - s) / 20)
-                Results[setting][camera].append((e -s) / 20)
+                Results[setting][camera].append(5 / ((e -s) / 20))
 
                 sess.close()
 
